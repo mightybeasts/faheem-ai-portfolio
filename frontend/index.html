@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faheem K - AI Portfolio Terminal</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-panel: #111111;
+      --border: #333;
+      --text: #e5e5e5;
+      --primary: #10b981;
+      --primary-dim: rgba(16, 185, 129, 0.2);
+      --secondary: #3b82f6;
+      --error: #ef4444;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f4f5;
+      --bg-panel: #ffffff;
+      --border: #d4d4d8;
+      --text: #171717;
+      --primary: #059669;
+      --primary-dim: rgba(5, 150, 105, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      z-index: 2;
+      background-size: 100% 3px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    [data-theme="light"] body::after {
+      display: none;
+    }
+
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      z-index: 3;
+    }
+
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background-color: var(--bg-panel);
+      border-right: 1px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      gap: 32px;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px var(--primary-dim);
+    }
+
+    .profile h1 {
+      font-size: 24px;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile h1::before {
+      content: ">";
+      color: var(--primary);
+      animation: blink 1s step-end infinite;
+    }
+
+    .profile p {
+      font-size: 14px;
+      color: var(--text);
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .sidebar-section h3 {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--border);
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .contact-list p {
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .contact-list a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .contact-list a:hover {
+      text-decoration: underline;
+    }
+
+    .quick-cmds {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cmd-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cmd-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      color: var(--primary);
+      padding-left: 16px;
+    }
+
+    .action-btn {
+      background: var(--primary);
+      color: var(--bg);
+      border: none;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    .theme-toggle {
+      margin-top: auto;
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--text);
+      padding: 8px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--primary);
+    }
+
+    .main-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg);
+      position: relative;
+    }
+
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-panel);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .terminal-title {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .terminal-status {
+      font-size: 12px;
+      color: var(--primary);
+    }
+
+    .chat-window {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .msg-block {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 18px 24px;
+      border-radius: 8px;
+    }
+
+    .msg-block.user {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 2px solid var(--border);
+    }
+
+    [data-theme="light"] .msg-block.user {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    .msg-block.ai {
+      background: var(--primary-dim);
+      border-left: 2px solid var(--primary);
+    }
+
+    .msg-prefix {
+      font-weight: bold;
+      font-size: 13px;
+      opacity: 0.8;
+      font-family: var(--font-mono);
+    }
+
+    .msg-block.user .msg-prefix {
+      color: var(--secondary);
+    }
+
+    .msg-block.ai .msg-prefix {
+      color: var(--primary);
+    }
+
+    .msg-content {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      white-space: break-spaces;
+      word-break: break-word;
+      letter-spacing: 0.2px;
+    }
+
+    .msg-content a {
+      color: var(--secondary);
+      text-decoration: underline;
+    }
+
+    .msg-content ul {
+      margin-left: 20px;
+      margin-top: 8px;
+    }
+
+    .msg-content li {
+      margin-bottom: 6px;
+    }
+
+    .msg-content p {
+      margin-bottom: 12px;
+    }
+
+    .msg-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .composer {
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-panel);
+      display: flex;
+      gap: 12px;
+      align-items: flex-end;
+    }
+
+    .prompt-symbol {
+      color: var(--primary);
+      font-size: 16px;
+      font-weight: bold;
+      padding-bottom: 8px;
+    }
+
+    .input-wrap {
+      flex: 1;
+    }
+
+    textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      resize: none;
+      outline: none;
+      min-height: 24px;
+      max-height: 150px;
+    }
+
+    textarea::placeholder {
+      color: var(--border);
+    }
+
+    .send-btn {
+      background: transparent;
+      border: 1px dashed var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .send-btn:hover:not(:disabled) {
+      background: var(--primary-dim);
+    }
+
+    .send-btn:disabled,
+    textarea:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .blink-cursor::after {
+      content: "▋";
+      animation: blink .8s infinite;
+    }
+
+    .chat-window {
+      scroll-behavior: smooth;
+    }
+
+    @keyframes blink {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+
+
+
+    @media (max-width:768px) {
+
+      body {
+        overflow: auto;
+        height: auto;
+      }
+
+      .app-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 100%;
+        min-width: unset;
+        padding: 16px;
+        gap: 18px;
+        border-right: none;
+        border-bottom: 1px solid var(--primary);
+      }
+
+      .profile h1 {
+        font-size: 28px;
+      }
+
+      .profile p {
+        font-size: 13px;
+      }
+
+      .quick-cmds {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .cmd-btn {
+        font-size: 12px;
+        padding: 12px;
+      }
+
+      .main-chat {
+        width: 100%;
+        min-height: 70vh;
+        height: auto;
+      }
+
+      .chat-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 14px;
+      }
+
+      .terminal-title {
+        font-size: 13px;
+        line-height: 1.4;
+        max-width: 75%;
+      }
+
+      .chat-window {
+        padding: 14px;
+      }
+
+      .msg-block {
+        padding: 14px;
+      }
+
+      .msg-content {
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      .composer {
+        position: sticky;
+        bottom: 0;
+        padding: 12px;
+      }
+
+      textarea {
+        font-size: 16px;
+      }
+
+      .send-btn {
+        padding: 12px;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="profile">
+        <h1>FAHEEM K</h1>
+        <p>MCA Student & Developer</p>
+        <p style="margin-top:8px; opacity:0.6; font-size:12px;">Building full-stack apps, LLM workflows, and local AI
+          solutions.</p>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>CONTACT_INFO</h3>
+        <div class="contact-list">
+          <p>USR: faheem-dev</p>
+          <p>EML: <a href="mailto:fahkfah9@gmail.com">fahkfah9@gmail.com</a></p>
+          <p>GHB: <a href="https://github.com/mightybeasts" target="_blank">github.com/mightybeasts</a></p>
+          <p>LNK: <a href="https://www.linkedin.com/in/faheem-dev/" target="_blank">linkedin.com/in/faheem-dev</a></p>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>QUICK_CMDS</h3>
+        <div class="quick-cmds">
+          <button class="cmd-btn" onclick="ask('What projects has Faheem built?')">> ./projects.sh</button>
+          <button class="cmd-btn" onclick="ask('What are Faheem\'s strongest skills?')">> ./skills.sh</button>
+          <button class="cmd-btn" onclick="ask('Summarize Faheem for a recruiter.')">> ./summary.sh</button>
+          <button class="cmd-btn" onclick="ask('Can I download Faheem\'s resume?')">> cat resume.pdf</button>
+        </div>
+      </div>
+
+      <a href="/resume/download" class="action-btn" download>DOWNLOAD_RESUME.EXE</a>
+
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">[ SWITCH_THEME ]</button>
+    </aside>
+
+    <main class="main-chat">
+      <div class="chat-header">
+        <div class="terminal-title">FAHEEM AI PORTFOLIO • Ask Anything</div>
+        <div class="terminal-status" id="connectionStatus">SYS.ONLINE</div>
+      </div>
+
+      <div class="chat-window" id="chatWindow">
+        <div class="msg-block ai">
+          <div class="msg-prefix">faheem_ai@local:~$</div>
+          <div class="msg-content">
+            <p>Welcome to Faheem's AI Terminal.<br>Streaming responses enabled • Powered by Groq</p>
+            <p>Ask me about Faheem's projects, skills, education, resume, or career goals.</p>
+          </div>
+        </div>
+      </div>
+
+      <form class="composer" id="chatForm">
+        <div class="prompt-symbol">$</div>
+        <div class="input-wrap">
+          <textarea id="input" placeholder="Type your command..." rows="1" onkeydown="handleKey(event)"
+            oninput="autoResize(this)"></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" type="submit">EXEC</button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const themeBtn = document.getElementById('themeBtn');
+
+    let historyData = [];
+    let busy = false;
+
+    function toggleTheme() {
+      const current = document.documentElement.dataset.theme || 'dark';
+      const nextTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = nextTheme;
+      localStorage.setItem('theme', nextTheme);
+    }
+    applyTheme();
+    function applyTheme() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.dataset.theme = theme;
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function ask(cmd) {
+      sendMessage(cmd);
+    }
+
+    function appendMessage(role, text) {
+      const block = document.createElement('div');
+      block.className = 'msg-block ' + role;
+
+      const prefix = document.createElement('div');
+      prefix.className = 'msg-prefix';
+      prefix.textContent = role === 'user' ? 'guest@local:~$' : 'faheem_ai@local:~$';
+
+      const content = document.createElement('div');
+      content.className = 'msg-content';
+      if (role === 'ai' && text) {
+        content.innerHTML = marked.parse(text);
+      } else {
+        content.textContent = text;
+      }
+
+      block.appendChild(prefix);
+      block.appendChild(content);
+      chatWindow.appendChild(block);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      return content;
+    }
+
+    function setSysStatus(status, isError = false) {
+      connectionStatus.textContent = status;
+      connectionStatus.style.color = isError ? 'var(--error)' : 'var(--primary)';
+    }
+
+    function isResumeRequest(text) {
+      return /\b(resume|cv|curriculum vitae)\b/i.test(text);
+    }
+
+async function sendMessage(promptText){
+
+if(busy)return;
+
+const text=
+(promptText||input.value)
+.trim();
+
+if(!text)return;
+
+appendMessage(
+'user',
+text
+);
+
+input.value='';
+
+autoResize(input);
+
+busy=true;
+
+sendBtn.disabled=true;
+
+input.disabled=true;
+
+setSysStatus(
+'SYS.THINKING'
+);
+
+const aiContentNode=
+appendMessage(
+'ai',
+''
+);
+
+aiContentNode
+.classList
+.add(
+'blink-cursor'
+);
+
+let rawText='';
+
+try{
+
+const response=
+await fetch(
+'/chat/stream',
+{
+method:'POST',
+headers:{
+'Content-Type':
+'application/json'
+},
+body:JSON.stringify({
+message:text,
+history:historyData
+})
+}
+);
+
+if(
+!response.ok
+||
+!response.body
+){
+
+throw Error();
+
+}
+
+setSysStatus(
+'SYS.STREAMING'
+);
+
+const reader=
+response.body
+.getReader();
+
+const decoder=
+new TextDecoder();
+
+while(true){
+
+const {
+value,
+done
+}
+=
+await reader.read();
+
+if(done)
+break;
+
+const chunk=
+decoder.decode(
+value,
+{
+stream:true
+}
+);
+
+rawText += chunk;
+
+/* IMPORTANT:
+render plain text first
+NOT markdown
+*/
+
+aiContentNode.textContent=
+rawText;
+
+chatWindow.scrollTop=
+chatWindow.scrollHeight;
+
+/* tiny delay for visible typing */
+
+await new Promise(
+r=>
+setTimeout(
+r,
+5
+)
+);
+
+}
+
+/* convert markdown only once */
+
+aiContentNode.innerHTML=
+marked.parse(
+rawText
+);
+
+historyData.push({
+role:'user',
+content:text
+});
+
+historyData.push({
+role:'assistant',
+content:rawText
+});
+
+setSysStatus(
+'SYS.ONLINE'
+);
+
+}
+catch{
+
+aiContentNode.textContent=
+'Connection Error';
+
+setSysStatus(
+'SYS.ERROR',
+true
+);
+
+}
+finally{
+
+busy=false;
+
+sendBtn.disabled=false;
+
+input.disabled=false;
+
+input.focus();
+
+aiContentNode
+.classList
+.remove(
+'blink-cursor'
+);
+
+}
+
+}
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+  </script>
+</body>
+
+</html>
