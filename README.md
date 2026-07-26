@@ -44,13 +44,3 @@ uvicorn main:app --reload
 
 Set up your local `.env` with the required API keys (Groq API key for production-style responses, or point to a local Ollama instance for development).
 
-## About Me
-
-I'm a final-semester MCA student, currently building AI/ML and full-stack projects while actively exploring software engineering roles. Other projects include:
-- **SkillSight** — NLP-based resume-to-job matcher (TF-IDF + cosine similarity)
-- **TripMind** — Gemini API-powered travel planner
-- **BlackSpades** — Live React/Three.js esports client site
-
-## Contact
-
-Feel free to reach out via the links on the portfolio site itself.
